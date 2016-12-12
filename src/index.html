@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Prometheus Alert Indicator</title>
+
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+
+    <script src="../assets/vuejs/vue.min.js"></script>
+</head>
+
+<body>
+<h1>Current Alerts</h1>
+
+<div id="alert-app">
+
+    <div id="alertmanager-link">
+        Alerts powered by: <a href="{{config.baseUri}}" target="_blank" class="open-in-browser">{{config.baseUri}}</a>
+    </div>
+
+    <div id="technical-error">
+        {{ error }}
+    </div>
+
+    <div id="status-summary">
+        {{ status }}
+    </div>
+
+    <div id="alerts">
+        <ul>
+            <li v-repeat="alerts">{{ $value }}</li>
+        </ul>
+    </div>
+</div>
+
+</body>
+
+<script>
+  const config = require('./../config');
+
+  const model = {
+    config: config,
+    error: 'ok',
+    status: 'ok',
+    alerts: ["voo"]
+  };
+
+  const vue = new Vue({el: '#alert-app', data: model});
+  require('./app')(model);
+
+</script>
+</html>

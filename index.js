@@ -1,58 +1,91 @@
-// app: Module to control application life.
-// BrowserWindow: Module to create native browser window.
+"use strict";
 
-const {app, BrowserWindow} = require('electron');
-const path = require('path');
-const url = require('url');
+const iconPath = __dirname + "/images/icons";
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+const menubar = require('menubar');
+const mb = menubar({
+  dir: __dirname + "/src",
+  icon: iconPath + "/good@2x.png",
+  tooltip: "Prometheus Alerts",
+  preloadWindow: false,
+  supportsTrayHighlightState: true
+});
 
-function createWindow() {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600});
+// mb:
+// {
+//   app: the electron require('app') instance,
+//   window: the electron require('browser-window') instance,
+//   tray: the electron require('tray') instance,
+//   positioner: the electron-positioner instance,
+//   setOption(option, value): change an option after menubar is created,
+//   getOption(option): get an menubar option,
+//   showWindow(): show the menubar window,
+//   hideWindow(): hide the menubar window
+// }
 
-  // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  }));
+const config = require('./config');
+const prom = require('./src/prometheus-alerts');
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
-
-  // Emitted when the window is closed.
-  mainWindow.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null
-  })
+function statusGood() {
+  let NativeImage = require('electron').nativeImage;
+  let image = NativeImage.createFromPath(iconPath + "/good@2x.png");
+  mb.tray.setImage(image);
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+function statusBad() {
+  let NativeImage = require('electron').nativeImage;
+  let image = NativeImage.createFromPath(iconPath + "/bad@2x.png");
+  mb.tray.setImage(image);
+}
 
-// Quit when all windows are closed.
-app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+function statusUgly() {
+  let NativeImage = require('electron').nativeImage;
+  let image = NativeImage.createFromPath(iconPath + "/bad@2x.png");
+  mb.tray.setImage(image);
+}
+
+const iconUpdaterByStatus = {
+  'ok': statusGood,
+  'warning': statusBad,
+  'critical': statusUgly
+};
+
+function updateAlerts() {
+  prom.run(config, (result, error) => {
+    if (error) {
+      console.log('error', error);
+      mb.window.webContents.send('error', error);
+    }
+
+    if (result) {
+      if (iconUpdaterByStatus[result.status]) {
+        iconUpdaterByStatus[result.status]();
+      }
+
+      console.log('result', result);
+      mb.window.webContents.send('update', result.status, result.alerts);
+    }
+  });
+}
+
+mb.on('ready', function ready() {
+  console.log('app is ready');
+
+  updateAlerts();
+  setInterval(updateAlerts, 5000);
 });
 
-app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow()
-  }
-});
+// mb.on('after-create-window', function ready() {
+//   console.log('after-create-window');
+//   mb.window.openDevTools();
+// });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+// mb.once('show', function () {
+//   console.log('once(show)');
+//   mb.window.openDevTools();
+// });
+
+// mb.on('show', function () {
+//   console.log('show');
+//   mb.window.openDevTools();
+// });

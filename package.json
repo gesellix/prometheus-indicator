@@ -26,5 +26,10 @@
   "homepage": "https://github.com/gesellix/prometheus-indicator",
   "devDependencies": {
     "electron": "^1.4.12"
+  },
+  "dependencies": {
+    "lodash": "^4.17.2",
+    "menubar": "^5.1.0",
+    "q": "^1.4.1"
   }
 }
