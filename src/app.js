@@ -1,8 +1,7 @@
-"use strict";
-
-const {ipcRenderer} = require('electron');
-
 (function () {
+  "use strict";
+  const {ipcRenderer} = require('electron');
+
   module.exports = (model) => {
     model = model || {};
 

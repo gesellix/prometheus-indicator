@@ -6,7 +6,7 @@
     <title>Prometheus Alert Indicator</title>
 
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-
+    <link rel="stylesheet" href="../assets/style.css"/>
     <script src="../assets/vuejs/vue.min.js"></script>
 </head>
 
@@ -16,7 +16,7 @@
 <div id="alert-app">
 
     <div id="alertmanager-link">
-        Alerts powered by: <a href="{{config.baseUri}}" target="_blank" class="open-in-browser">{{config.baseUri}}</a>
+        Alerts powered by: <a v-bind:href="config.baseUri" target="_blank" class="open-in-browser">{{config.baseUri}}</a>
     </div>
 
     <div id="technical-error">
@@ -29,7 +29,7 @@
 
     <div id="alerts">
         <ul>
-            <li v-repeat="alerts">{{ $value }}</li>
+            <li v-for="alert in alerts">{{ alert }}</li>
         </ul>
     </div>
 </div>
