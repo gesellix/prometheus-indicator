@@ -1,0 +1,30 @@
+{
+  "name": "prometheus-indicator",
+  "version": "0.0.1",
+  "description": "Show Prometheus Alerts in Your System Tray",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gesellix/prometheus-indicator"
+  },
+  "keywords": [
+    "prometheus",
+    "indicator",
+    "alert",
+    "manager",
+    "tray"
+  ],
+  "author": "Tobias Gesellchen <tobias@gesellix.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gesellix/prometheus-indicator/issues"
+  },
+  "homepage": "https://github.com/gesellix/prometheus-indicator",
+  "devDependencies": {
+    "electron": "^1.4.12"
+  }
+}
