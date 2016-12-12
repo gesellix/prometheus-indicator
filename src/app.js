@@ -10,13 +10,16 @@
       ipcRenderer.on('error', function (e, error) {
         console.log('on error', e, error);
 
+        model.status = 'error';
         model.error = error;
+        model.alerts = [];
       });
 
       ipcRenderer.on('update', function (e, status, alerts) {
         console.log('on update', e, status, alerts);
 
         model.status = status;
+        model.error = '';
         model.alerts = alerts;
       });
     };

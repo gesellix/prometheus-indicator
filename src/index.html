@@ -19,12 +19,12 @@
         Alerts powered by: <a v-bind:href="config.baseUri" target="_blank" class="open-in-browser">{{config.baseUri}}</a>
     </div>
 
-    <div id="technical-error">
-        {{ error }}
+    <div id="status-summary">
+        status: {{ status }}
     </div>
 
-    <div id="status-summary">
-        {{ status }}
+    <div id="technical-error">
+        {{ error }}
     </div>
 
     <div id="alerts">
@@ -41,9 +41,9 @@
 
   const model = {
     config: config,
-    error: 'ok',
-    status: 'ok',
-    alerts: ["voo"]
+    error: '',
+    status: 'unknown',
+    alerts: []
   };
 
   const vue = new Vue({el: '#alert-app', data: model});
