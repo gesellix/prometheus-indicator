@@ -27,7 +27,7 @@
           const alerts = collectAlerts(jsonResponse.data);
           console.log(alerts);
 
-          const status = {title: (config.title || ""), status: 'ok', alerts: []};
+          const status = {title: (alertmanager.title || ""), status: 'ok', alerts: []};
           const criticalAlerts = _.filter(alerts, {severity: 'critical', silenced: false});
           const warningAlerts = _.filter(alerts, {severity: 'warning', silenced: false});
 
@@ -42,7 +42,7 @@
           cb(status, null);
         },
         function (error) {
-          console.log(error);
+          console.log('error:', error);
           cb(null, "can't get prometheus alertmanager alerts");
         }
       );
