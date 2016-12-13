@@ -4,6 +4,7 @@
   "description": "Show Prometheus Alerts in Your System Tray",
   "main": "index.js",
   "scripts": {
+    "dist": "build",
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -25,11 +26,19 @@
   },
   "homepage": "https://github.com/gesellix/prometheus-indicator",
   "devDependencies": {
-    "electron": "^1.4.12"
+    "electron": "^1.4.12",
+    "electron-builder": "^10.7.0"
   },
   "dependencies": {
+    "electron-settings": "^2.2.2",
     "lodash": "^4.17.2",
     "menubar": "^5.1.0",
     "q": "^1.4.1"
+  },
+  "build": {
+    "appId": "de.gesellix.prometheus.indicator",
+    "mac": {
+      "category": "i.do.not.know"
+    }
   }
 }

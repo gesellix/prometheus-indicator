@@ -1,9 +1,9 @@
 "use strict";
 
-const iconPath = __dirname + "/images/icons";
+const config = require('./config').load();
 
-const menubar = require('menubar');
-const mb = menubar({
+const iconPath = __dirname + "/assets/icons";
+const mb = require('menubar')({
   dir: __dirname + "/src",
   icon: iconPath + "/good@2x.png",
   tooltip: "Prometheus Alerts",
@@ -22,9 +22,6 @@ const mb = menubar({
 //   showWindow(): show the menubar window,
 //   hideWindow(): hide the menubar window
 // }
-
-const config = require('./config');
-const prom = require('./src/prometheus-alerts');
 
 function statusGood() {
   let NativeImage = require('electron').nativeImage;
@@ -50,6 +47,8 @@ const iconUpdaterByStatus = {
   'critical': statusUgly
 };
 
+const prom = require('./src/prometheus-alerts');
+
 function updateAlerts() {
   prom.run(config, (result, error) => {
     if (error) {
@@ -70,6 +69,7 @@ function updateAlerts() {
 
 mb.on('ready', function ready() {
   console.log('app is ready');
+  // mb.window.webContents.send('config', config);
 
   updateAlerts();
   setInterval(updateAlerts, 5000);
@@ -78,6 +78,7 @@ mb.on('ready', function ready() {
 // mb.on('after-create-window', function ready() {
 //   console.log('after-create-window');
 //   mb.window.openDevTools();
+//   mb.window.webContents.send('config', config);
 // });
 
 // mb.once('show', function () {

@@ -6,7 +6,7 @@
     <title>Prometheus Alert Indicator</title>
 
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-    <link rel="stylesheet" href="../assets/style.css"/>
+    <link rel="stylesheet" href="style.css"/>
     <script src="../assets/vuejs/vue.min.js"></script>
 </head>
 
@@ -37,7 +37,7 @@
 </body>
 
 <script>
-  const config = require('./../config');
+  const config = require('./../config').load();
 
   const model = {
     config: config,
