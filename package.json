@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dist": "build",
+    "pack": "build --dir",
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,13 +27,13 @@
   },
   "homepage": "https://github.com/gesellix/prometheus-indicator",
   "devDependencies": {
-    "electron": "^1.4.12",
-    "electron-builder": "^10.7.0"
+    "electron": "^1.4.13",
+    "electron-builder": "^10.15.1"
   },
   "dependencies": {
     "electron-settings": "^2.2.2",
-    "lodash": "^4.17.2",
-    "menubar": "^5.1.0",
+    "lodash": "^4.17.3",
+    "menubar": "^5.2.0",
     "q": "^1.4.1"
   },
   "build": {

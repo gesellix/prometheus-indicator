@@ -37,10 +37,10 @@
 </body>
 
 <script>
-  const config = require('./../config').load();
-
   const model = {
-    config: config,
+    config: {
+      baseUri: ''
+    },
     error: '',
     status: 'unknown',
     alerts: []

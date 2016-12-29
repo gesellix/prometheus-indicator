@@ -23,43 +23,35 @@ const mb = require('menubar')({
 //   hideWindow(): hide the menubar window
 // }
 
-function statusGood() {
-  let NativeImage = require('electron').nativeImage;
-  let image = NativeImage.createFromPath(iconPath + "/good@2x.png");
-  mb.tray.setImage(image);
-}
-
-function statusBad() {
-  let NativeImage = require('electron').nativeImage;
-  let image = NativeImage.createFromPath(iconPath + "/bad@2x.png");
-  mb.tray.setImage(image);
-}
-
-function statusUgly() {
-  let NativeImage = require('electron').nativeImage;
-  let image = NativeImage.createFromPath(iconPath + "/bad@2x.png");
-  mb.tray.setImage(image);
-}
-
-const iconUpdaterByStatus = {
-  'ok': statusGood,
-  'warning': statusBad,
-  'critical': statusUgly
+let NativeImage = require('electron').nativeImage;
+const iconPathByStatus = {
+  'unknown-error': iconPath + "/unknown-error@2x.png",
+  'ok': iconPath + "/good@2x.png",
+  'warning': iconPath + "/bad@2x.png",
+  'critical': iconPath + "/bad@2x.png"
 };
+
+function updateStatusIndicator(status) {
+  if (!!iconPathByStatus[status]) {
+    let image = NativeImage.createFromPath(iconPathByStatus[status]);
+    mb.tray.setImage(image);
+  }
+// todo else -> show 'status unknown' icon
+}
 
 const prom = require('./src/prometheus-alerts');
 
 function updateAlerts() {
   prom.run(config, (result, error) => {
     if (error) {
+      updateStatusIndicator('unknown-error');
+
       console.log('error', error);
       mb.window.webContents.send('error', error);
     }
 
     if (result) {
-      if (iconUpdaterByStatus[result.status]) {
-        iconUpdaterByStatus[result.status]();
-      }
+      updateStatusIndicator(result.status);
 
       console.log('result', result);
       mb.window.webContents.send('update', result.status, result.alerts);
@@ -69,21 +61,37 @@ function updateAlerts() {
 
 mb.on('ready', function ready() {
   console.log('app is ready');
-  // mb.window.webContents.send('config', config);
 
   updateAlerts();
-  setInterval(updateAlerts, 5000);
+  setInterval(updateAlerts, config.pollInterval);
 });
 
-// mb.on('after-create-window', function ready() {
-//   console.log('after-create-window');
-//   mb.window.openDevTools();
-//   mb.window.webContents.send('config', config);
+// mb.app.on('web-contents-created', function(e, webContents) {
+// console.log('web-contents-created');
+//webContents.send('config', config);
+//mb.window.webContents.send('config', config);
 // });
 
-// mb.once('show', function () {
-//   console.log('once(show)');
-//   mb.window.openDevTools();
+mb.on('after-create-window', function() {
+  console.log('after-create-window');
+  mb.window.openDevTools();
+  // console.log(mb.window.webContents);
+
+  mb.app.on('web-contents-created', function(e, webContents) {
+    console.log('web-contents-created');
+    //webContents.send('config', config);
+    mb.window.webContents.send('config', config);
+  });
+
+// setTimeout(function() {
+// console.log('send config...', config);
+// mb.window.webContents.send('config', config);
+// }, 1000);
+});
+
+// mb.once('show', function() {
+  // console.log('once(show)');
+//mb.window.openDevTools();
 // });
 
 // mb.on('show', function () {

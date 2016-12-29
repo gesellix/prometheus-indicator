@@ -5,9 +5,11 @@
   settings.defaults({
     alertmanager: {
       title: "Prometheus Alerts",
-      baseUri: "http://localhost:9093"
+      baseUri: "http://localhost:9093",
+      pollInterval: 5000
     }
   });
+  settings.applyDefaults();
 
 // settings.set('alertmanager', {
 //   baseUri: "http://example.com"

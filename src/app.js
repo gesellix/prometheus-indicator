@@ -7,6 +7,12 @@
 
     const init = () => {
 
+      ipcRenderer.on('config', function (e, config) {
+        console.log('on config', e, config);
+
+        model.config.baseUri = config.baseUri;
+      });
+
       ipcRenderer.on('error', function (e, error) {
         console.log('on error', e, error);
 

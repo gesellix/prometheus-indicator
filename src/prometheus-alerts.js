@@ -1,4 +1,4 @@
-(function () {
+(function() {
   "use strict";
   const _ = require('lodash');
   const Q = require('q');
@@ -7,15 +7,16 @@
   module.exports = {
 
     run: (alertmanager, cb) => {
-      if (!_.has(alertmanager, 'baseUri')) { return cp(null, "Please specify Prometheus Alertmanager base URI (alertmanager.baseUri).")}
+      if (!_.has(alertmanager, 'baseUri')) {
+        return cb(null, "Please specify Prometheus Alertmanager base URI (alertmanager.baseUri).")
+      }
 
-      const requestPrometheusAlertmanager = function () {
+      const requestPrometheusAlertmanager = function() {
         const deferred = Q.defer();
-        jsonRequest(alertmanager.baseUri + "/api/v1/alerts/groups", function (error, json) {
+        jsonRequest(alertmanager.baseUri + "/api/v1/alerts/groups", function(error, json) {
           if (error) {
             deferred.reject(error);
-          }
-          else {
+          } else {
             deferred.resolve(json);
           }
         });
@@ -23,40 +24,48 @@
       };
 
       requestPrometheusAlertmanager().then(
-        function (jsonResponse) {
+        function(jsonResponse) {
           const alerts = collectAlerts(jsonResponse.data);
-          console.log(alerts);
+          console.log('current alerts', alerts);
 
-          const status = {title: (alertmanager.title || ""), status: 'ok', alerts: []};
-          const criticalAlerts = _.filter(alerts, {severity: 'critical', silenced: false});
-          const warningAlerts = _.filter(alerts, {severity: 'warning', silenced: false});
+          const status = {
+            title: (alertmanager.title || ""),
+            status: 'ok',
+            alerts: []
+          };
+          const criticalAlerts = _.filter(alerts, {
+            severity: 'critical',
+            silenced: false
+          });
+          const warningAlerts = _.filter(alerts, {
+            severity: 'warning',
+            silenced: false
+          });
 
           if (!_.isEmpty(criticalAlerts)) {
             status.status = 'critical';
             status.alerts = convertToMessages(criticalAlerts)
-          }
-          else if (!_.isEmpty(warningAlerts)) {
+          } else if (!_.isEmpty(warningAlerts)) {
             status.status = 'warning';
             status.alerts = convertToMessages(warningAlerts)
           }
           cb(status, null);
         },
-        function (error) {
+        function(error) {
           console.log('error:', error);
           cb(null, "can't get prometheus alertmanager alerts");
         }
       );
 
       function jsonRequest(options, callback) {
-        request(options, function (err, response, body) {
+        request(options, function(err, response, body) {
           if (err || !response || response.statusCode != 200) {
             err = (err || (response ? ("bad statusCode: " + response.statusCode) : "bad response")) + " from " + options.url;
           }
           let jsonBody;
           try {
             jsonBody = JSON.parse(body);
-          }
-          catch (e) {
+          } catch (e) {
             if (!err) {
               err = 'invalid json response';
             }
@@ -66,9 +75,9 @@
       }
 
       function collectAlerts(json) {
-        return _.flattenDeep(_.map(json, function (d) {
-          return _.map(d.blocks, function (block) {
-            return _.map(block.alerts, function (alert) {
+        return _.flattenDeep(_.map(json, function(d) {
+          return _.map(d.blocks, function(block) {
+            return _.map(block.alerts, function(alert) {
               return {
                 "severity": alert.labels.severity,
                 "env": alert.labels.env,
@@ -86,7 +95,10 @@
       }
 
       function convertToMessage(alert) {
-        return [alert.env.toUpperCase(), alert.alertname, alert.human_readable_context_name].join(" ").trim();
+        return [
+          (alert.env || '').toUpperCase(),
+          alert.alertname,
+          alert.human_readable_context_name].join(" ").trim();
       }
     }
   };
