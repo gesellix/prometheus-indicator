@@ -1,6 +1,7 @@
 "use strict";
 
-const {ipcMain, nativeImage} = require('electron');
+const isMac = process.platform === 'darwin'
+const {ipcMain, Menu, nativeImage} = require('electron');
 const config = require('./config').load();
 
 const iconPath = __dirname + "/assets/icons";
@@ -71,6 +72,10 @@ ipcMain.on('close-app', (event, data) => {
 
 mb.on('ready', function ready() {
   console.log('app is ready');
+  mb.tray.setContextMenu(Menu.buildFromTemplate([
+    {label: 'Quit', type: 'normal', role: isMac ? 'close' : 'quit'},
+  ]))
+
   updateAlerts();
   setInterval(updateAlerts, config.pollInterval);
 });
