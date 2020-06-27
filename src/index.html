@@ -46,7 +46,16 @@
     alerts: []
   };
 
-  const vue = new Vue({el: '#alert-app', data: model});
+  const $electron = require('electron');
+  const vue = new Vue({
+    el: '#alert-app', data: model,
+    mounted() {
+      $electron.ipcRenderer.send('renderer-mounted')
+    },
+    destroyed() {
+      $electron.ipcRenderer.removeAllListeners();
+    }
+  });
   require('./app')(model);
 
 </script>

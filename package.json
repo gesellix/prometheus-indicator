@@ -27,14 +27,15 @@
   },
   "homepage": "https://github.com/gesellix/prometheus-indicator",
   "devDependencies": {
-    "electron": "^1.4.13",
+    "electron": "^9.0.5",
     "electron-builder": "^22.7.0"
   },
   "dependencies": {
-    "electron-settings": "^2.2.2",
+    "electron-store": "^5.2.0",
     "lodash": "^4.17.3",
-    "menubar": "^5.2.0",
-    "q": "^1.4.1"
+    "menubar": "^9.0.1",
+    "q": "^1.4.1",
+    "request": "^2.88.2"
   },
   "build": {
     "appId": "de.gesellix.prometheus.indicator",

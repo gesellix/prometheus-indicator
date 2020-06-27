@@ -1,14 +1,18 @@
 "use strict";
 
+const {ipcMain, nativeImage} = require('electron');
 const config = require('./config').load();
 
 const iconPath = __dirname + "/assets/icons";
-const mb = require('menubar')({
+const mb = require('menubar').menubar({
   dir: __dirname + "/src",
   icon: iconPath + "/good@2x.png",
   tooltip: "Prometheus Alerts",
   preloadWindow: false,
-  supportsTrayHighlightState: true
+  supportsTrayHighlightState: true,
+  browserWindow: {
+    webPreferences: {nodeIntegration: true},
+  }
 });
 
 // mb:
@@ -23,8 +27,8 @@ const mb = require('menubar')({
 //   hideWindow(): hide the menubar window
 // }
 
-let NativeImage = require('electron').nativeImage;
 const iconPathByStatus = {
+  '': iconPath + "/unknown-error@2x.png",
   'unknown-error': iconPath + "/unknown-error@2x.png",
   'ok': iconPath + "/good@2x.png",
   'warning': iconPath + "/bad@2x.png",
@@ -33,7 +37,7 @@ const iconPathByStatus = {
 
 function updateStatusIndicator(status) {
   if (!!iconPathByStatus[status]) {
-    let image = NativeImage.createFromPath(iconPathByStatus[status]);
+    let image = nativeImage.createFromPath(iconPathByStatus[status]);
     mb.tray.setImage(image);
   }
 // todo else -> show 'status unknown' icon
@@ -44,53 +48,41 @@ const prom = require('./src/prometheus-alerts');
 function updateAlerts() {
   prom.run(config, (result, error) => {
     if (error) {
-      updateStatusIndicator('unknown-error');
-
       console.log('error', error);
+      updateStatusIndicator('unknown-error');
       mb.window.webContents.send('error', error);
     }
 
     if (result) {
-      updateStatusIndicator(result.status);
-
       console.log('result', result);
+      updateStatusIndicator(result.status);
       mb.window.webContents.send('update', result.status, result.alerts);
     }
   });
 }
 
+ipcMain.on('renderer-mounted', (event, data) => {
+  event.sender.send('config', config)
+})
+
 mb.on('ready', function ready() {
   console.log('app is ready');
-
   updateAlerts();
   setInterval(updateAlerts, config.pollInterval);
 });
 
-// mb.app.on('web-contents-created', function(e, webContents) {
-// console.log('web-contents-created');
-//webContents.send('config', config);
-//mb.window.webContents.send('config', config);
-// });
-
-mb.on('after-create-window', function() {
+mb.on('after-create-window', function () {
   console.log('after-create-window');
-  mb.window.openDevTools();
+  // mb.window.openDevTools();
   // console.log(mb.window.webContents);
 
-  mb.app.on('web-contents-created', function(e, webContents) {
+  mb.app.on('web-contents-created', function (e, webContents) {
     console.log('web-contents-created');
-    //webContents.send('config', config);
-    mb.window.webContents.send('config', config);
   });
-
-// setTimeout(function() {
-// console.log('send config...', config);
-// mb.window.webContents.send('config', config);
-// }, 1000);
 });
 
 // mb.once('show', function() {
-  // console.log('once(show)');
+// console.log('once(show)');
 //mb.window.openDevTools();
 // });
 

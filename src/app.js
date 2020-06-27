@@ -6,7 +6,6 @@
     model = model || {};
 
     const init = () => {
-
       ipcRenderer.on('config', function (e, config) {
         console.log('on config', e, config);
 
