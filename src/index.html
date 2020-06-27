@@ -2,12 +2,14 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <title>Prometheus Alert Indicator</title>
+  <meta charset="utf-8">
+  <title>Prometheus Alert Indicator</title>
 
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-    <link rel="stylesheet" href="style.css"/>
-    <script src="../assets/vuejs/vue.min.js"></script>
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="style.css"/>
+  <!-- https://google.github.io/material-design-icons/#icon-font-for-the-web -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="../assets/vuejs/vue.min.js"></script>
 </head>
 
 <body>
@@ -15,23 +17,25 @@
 
 <div id="alert-app">
 
-    <div id="alertmanager-link">
-        Alerts powered by: <a v-bind:href="config.baseUri" target="_blank" class="open-in-browser">{{config.baseUri}}</a>
-    </div>
+  <button id="close-btn" v-on:click="close"><i class="material-icons">close</i></button>
 
-    <div id="status-summary">
-        status: {{ status }}
-    </div>
+  <div id="alertmanager-link">
+    Alerts powered by: <a v-bind:href="config.baseUri" target="_blank" class="open-in-browser">{{config.baseUri}}</a>
+  </div>
 
-    <div id="technical-error">
-        {{ error }}
-    </div>
+  <div id="status-summary">
+    status: {{ status }}
+  </div>
 
-    <div id="alerts">
-        <ul>
-            <li v-for="alert in alerts">{{ alert }}</li>
-        </ul>
-    </div>
+  <div id="technical-error">
+      {{ error }}
+  </div>
+
+  <div id="alerts">
+    <ul>
+      <li v-for="alert in alerts">{{ alert }}</li>
+    </ul>
+  </div>
 </div>
 
 </body>
@@ -46,17 +50,23 @@
     alerts: []
   };
 
-  const $electron = require('electron');
+  require('./app')(model);
+  const {ipcRenderer} = require('electron');
   const vue = new Vue({
-    el: '#alert-app', data: model,
+    el: '#alert-app',
+    data: model,
+    methods: {
+      close: function (event) {
+        ipcRenderer.send('close-app');
+      }
+    },
     mounted() {
-      $electron.ipcRenderer.send('renderer-mounted')
+      ipcRenderer.send('renderer-mounted');
     },
     destroyed() {
-      $electron.ipcRenderer.removeAllListeners();
+      ipcRenderer.removeAllListeners();
     }
   });
-  require('./app')(model);
 
 </script>
 </html>

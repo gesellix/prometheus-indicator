@@ -65,6 +65,10 @@ ipcMain.on('renderer-mounted', (event, data) => {
   event.sender.send('config', config)
 })
 
+ipcMain.on('close-app', (event, data) => {
+  mb.app.quit();
+})
+
 mb.on('ready', function ready() {
   console.log('app is ready');
   updateAlerts();
