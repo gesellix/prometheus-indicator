@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "electron-store": "^5.2.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "menubar": "^9.0.1",
     "q": "^1.4.1",
     "request": "^2.88.2"
