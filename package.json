@@ -28,7 +28,7 @@
   "homepage": "https://github.com/gesellix/prometheus-indicator",
   "devDependencies": {
     "electron": "^35.7.5",
-    "electron-builder": "^22.7.0"
+    "electron-builder": "^26.0.12"
   },
   "dependencies": {
     "electron-store": "^5.2.0",
